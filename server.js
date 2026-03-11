@@ -19,13 +19,24 @@ const startServer = async () => {
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({ extended: false }));
 
-    // Routes
-    app.use('/api/contact', contactRoutes);
+    // Request Logging Middleware
+    app.use((req, res, next) => {
+        console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
+        next();
+    });
+
+    // Health Check Route
+    app.get('/health', (req, res) => {
+        res.json({ status: 'OK', message: 'Backend is healthy', timestamp: new Date() });
+    });
 
     // Root route
     app.get('/', (req, res) => {
-        res.send('Portfolio Backend API is running...');
+        res.send('Portfolio Backend API is running... (Updated)');
     });
+
+    // Routes
+    app.use('/api/contact', contactRoutes);
 
     const PORT = process.env.PORT || 5000;
 
